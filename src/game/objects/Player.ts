@@ -1,5 +1,7 @@
 import Phaser from 'phaser'
 
+type PlayerType = 'willie' | 'jet-willie'
+
 export class Player extends Phaser.Physics.Arcade.Sprite {
   private jumpSound: Phaser.Sound.BaseSound
   private jumpCount = 0
@@ -7,6 +9,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private jumpVelocity = -1600
   private jumpsInAir = 0
   private maxAirJumps = 1
+  private currentType: PlayerType = 'willie'
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'willie-idle')
@@ -23,20 +26,23 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.jumpSound = scene.sound.add('jump', { volume: 0.2 })
   }
 
-  configure(options: { doubleJump: boolean; jumpVelocity: number; playerType: 'willie' | 'jet-willie' }) {
+  configure(options: { doubleJump: boolean; jumpVelocity: number; playerType: PlayerType }) {
     this.doubleJumpEnabled = options.doubleJump
     this.jumpVelocity = options.jumpVelocity
+    this.currentType = options.playerType
 
     if (options.playerType === 'jet-willie') {
       this.setTexture('jet-willie-idle')
       const body = this.body as Phaser.Physics.Arcade.Body
       body.setSize(350, 200)
-      body.setOffset(25, 25)
+      body.setOffset(0, 0)
+      this.setOrigin(0, 0)
     } else {
       this.setTexture('willie-idle')
       const body = this.body as Phaser.Physics.Arcade.Body
       body.setSize(54, 88)
       body.setOffset(21, 5)
+      this.setOrigin(0.5, 0.5)
     }
   }
 
@@ -62,10 +68,29 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     return false
   }
 
-  startRunning() { this.play('willie-run') }
-  hurt() { this.setTexture('willie-hurt'); this.anims.stop() }
-  celebrate() { this.setTexture('willie-cool'); this.anims.stop() }
-  sob() { this.setTexture('willie-sobbing'); this.anims.stop() }
+  startRunning() {
+    if (this.currentType === 'jet-willie') {
+      this.play('willie-jet')
+    } else {
+      this.play('willie-run')
+    }
+  }
+
+  hurt() {
+    this.anims.stop()
+    this.setTexture(this.currentType === 'jet-willie' ? 'jet-willie-hurt' : 'willie-hurt')
+  }
+
+  celebrate() {
+    this.anims.stop()
+    this.setTexture(this.currentType === 'jet-willie' ? 'jet-willie-cool' : 'willie-cool')
+  }
+
+  sob() {
+    this.anims.stop()
+    this.setTexture(this.currentType === 'jet-willie' ? 'jet-willie-hurt' : 'willie-sobbing')
+  }
+
   getJumpCount(): number { return this.jumpCount }
   resetJumpCount() { this.jumpCount = 0; this.jumpsInAir = 0 }
 }

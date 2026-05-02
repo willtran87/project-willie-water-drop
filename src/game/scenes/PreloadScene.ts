@@ -43,6 +43,11 @@ export class PreloadScene extends Phaser.Scene {
     this.load.spritesheet('meter-van', '/assets/sprites/meter-van.png', { frameWidth: 125, frameHeight: 80 })
     this.load.spritesheet('utility-truck', '/assets/sprites/utility-truck.png', { frameWidth: 150, frameHeight: 80 })
 
+    // Jet-Willie spritesheet (Day 5)
+    this.load.spritesheet('jet-willie', '/assets/sprites/jet-willie.png', {
+      frameWidth: 400, frameHeight: 250,
+    })
+
     // Environment
     this.load.image('ground', '/assets/environment/ground.png')
     this.load.image('cloud', '/assets/environment/cloud.png')
@@ -62,6 +67,7 @@ export class PreloadScene extends Phaser.Scene {
 
   create() {
     this.anims.create({ key: 'willie-run', frames: this.anims.generateFrameNumbers('willie', { start: 2, end: 3 }), frameRate: 10, repeat: -1 })
+    this.anims.create({ key: 'willie-jet', frames: this.anims.generateFrameNumbers('jet-willie', { start: 0, end: 1 }), frameRate: 10, repeat: -1 })
     this.anims.create({ key: 'floating-water-meter', frames: this.anims.generateFrameNumbers('water-meter', { start: 0, end: 3 }), frameRate: 10, repeat: -1 })
     this.anims.create({ key: 'floating-root-ball', frames: this.anims.generateFrameNumbers('root-ball', { start: 0, end: 1 }), frameRate: 6, repeat: -1 })
     this.anims.create({ key: 'vroom-vroom', frames: this.anims.generateFrameNumbers('vroom-vroom_small', { start: 0, end: 1 }), frameRate: 6, repeat: -1 })
