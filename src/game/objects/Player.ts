@@ -33,20 +33,19 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     if (options.playerType === 'jet-willie') {
       this.setTexture('jet-willie-idle')
-      // Scale down jet-willie to fit the 1000x340 canvas (original was 1200x420)
-      this.setScale(0.5)
-      this.setOrigin(0.5, 0.5)
+      // Display at 240x150 to fit the 1000x340 canvas (original 400x250 on 1200x420)
+      this.setDisplaySize(240, 150)
+      this.setOrigin(0.5, 1)
       const body = this.body as Phaser.Physics.Arcade.Body
-      // Body size/offset are in unscaled (400x250) coords
-      body.setSize(320, 200)
-      body.setOffset(40, 25)
+      body.setSize(300, 180)
+      body.setOffset(50, 35)
     } else {
       this.setTexture('willie-idle')
-      this.setScale(1)
+      this.setDisplaySize(88, 94)
+      this.setOrigin(0.5, 0.5)
       const body = this.body as Phaser.Physics.Arcade.Body
       body.setSize(54, 88)
       body.setOffset(21, 5)
-      this.setOrigin(0.5, 0.5)
     }
   }
 
@@ -75,6 +74,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   startRunning() {
     if (this.currentType === 'jet-willie') {
       this.play('willie-jet')
+      this.setDisplaySize(240, 150)
     } else {
       this.play('willie-run')
     }
@@ -82,17 +82,32 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   hurt() {
     this.anims.stop()
-    this.setTexture(this.currentType === 'jet-willie' ? 'jet-willie-hurt' : 'willie-hurt')
+    if (this.currentType === 'jet-willie') {
+      this.setTexture('jet-willie-hurt')
+      this.setDisplaySize(240, 150)
+    } else {
+      this.setTexture('willie-hurt')
+    }
   }
 
   celebrate() {
     this.anims.stop()
-    this.setTexture(this.currentType === 'jet-willie' ? 'jet-willie-cool' : 'willie-cool')
+    if (this.currentType === 'jet-willie') {
+      this.setTexture('jet-willie-cool')
+      this.setDisplaySize(240, 150)
+    } else {
+      this.setTexture('willie-cool')
+    }
   }
 
   sob() {
     this.anims.stop()
-    this.setTexture(this.currentType === 'jet-willie' ? 'jet-willie-hurt' : 'willie-sobbing')
+    if (this.currentType === 'jet-willie') {
+      this.setTexture('jet-willie-hurt')
+      this.setDisplaySize(240, 150)
+    } else {
+      this.setTexture('willie-sobbing')
+    }
   }
 
   getJumpCount(): number { return this.jumpCount }
