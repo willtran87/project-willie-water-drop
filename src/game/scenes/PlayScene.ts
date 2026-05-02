@@ -19,6 +19,9 @@ export class PlayScene extends Phaser.Scene {
   private isDead = false
   private scoreTimer?: Phaser.Time.TimerEvent
 
+  private jumpParticles!: Phaser.GameObjects.Particles.ParticleEmitter
+  private trailParticles!: Phaser.GameObjects.Particles.ParticleEmitter
+
   private hitSound!: Phaser.Sound.BaseSound
   private reachSound!: Phaser.Sound.BaseSound
 
@@ -50,6 +53,32 @@ export class PlayScene extends Phaser.Scene {
 
     // Player
     this.player = new Player(this, 50, height - 30)
+
+    // Jump splash particles
+    this.jumpParticles = this.add.particles(0, 0, 'willie', {
+      speed: { min: 50, max: 150 },
+      angle: { min: 220, max: 320 },
+      scale: { start: 0.1, end: 0 },
+      lifespan: 400,
+      tint: 0x38bdf8,
+      emitting: false,
+      quantity: 6,
+    })
+    this.jumpParticles.setDepth(98)
+
+    // Running trail
+    this.trailParticles = this.add.particles(0, 0, 'willie', {
+      speed: { min: 10, max: 30 },
+      angle: { min: 160, max: 200 },
+      scale: { start: 0.05, end: 0 },
+      lifespan: 300,
+      tint: 0x38bdf8,
+      frequency: 100,
+      follow: this.player,
+      followOffset: { x: -20, y: 10 },
+      emitting: false,
+    })
+    this.trailParticles.setDepth(98)
 
     // Sounds
     this.hitSound = this.sound.add('hit', { volume: 0.2 })
@@ -93,6 +122,7 @@ export class PlayScene extends Phaser.Scene {
     // Start player running
     this.player.setPosition(50, height - 30)
     this.player.startRunning()
+    this.trailParticles.start()
     this.player.resetJumpCount()
 
     // Score timer: +1 every 100ms
@@ -117,7 +147,10 @@ export class PlayScene extends Phaser.Scene {
 
   private handleJump() {
     if (!this.isGameRunning || this.isDead) return
-    this.player.jump()
+    const jumped = this.player.jump()
+    if (jumped) {
+      this.jumpParticles.emitParticleAt(this.player.x, this.player.y + 40)
+    }
   }
 
   private incrementScore() {
@@ -132,9 +165,9 @@ export class PlayScene extends Phaser.Scene {
       jumps: this.player.getJumpCount(),
     })
 
-    // Milestone sound every 100 points
     if (this.score % 100 === 0 && this.score > 0) {
       this.reachSound.play()
+      this.cameras.main.flash(200, 56, 189, 248, true)
     }
 
     // Check objective
@@ -148,6 +181,7 @@ export class PlayScene extends Phaser.Scene {
     this.scoreTimer?.remove()
     this.physics.pause()
     this.player.celebrate()
+    this.trailParticles.stop()
 
     gameEventEmitter.emit(GameEvents.OBJECTIVE_REACHED, {
       score: this.score,
@@ -164,6 +198,7 @@ export class PlayScene extends Phaser.Scene {
     this.physics.pause()
 
     this.player.hurt()
+    this.trailParticles.stop()
     this.hitSound.play()
 
     // Screen shake
