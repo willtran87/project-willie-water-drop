@@ -2,7 +2,6 @@ import Phaser from 'phaser'
 
 export const GameEvents = {
   // Phaser -> React
-  SCENE_READY: 'scene-ready',
   SCORE_CHANGED: 'score-changed',
   OBJECTIVE_REACHED: 'objective-reached',
   PLAYER_DIED: 'player-died',
@@ -17,3 +16,8 @@ export const GameEvents = {
 } as const
 
 export const gameEventEmitter = new Phaser.Events.EventEmitter()
+
+// Shared state for level startup — avoids race condition between
+// React useEffect timing and Phaser scene create() timing.
+export let pendingLevelId: number | null = null
+export function setPendingLevel(id: number | null) { pendingLevelId = id }

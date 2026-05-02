@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 import { Player } from '../objects/Player'
 import { ObstacleSpawner } from '../objects/ObstacleSpawner'
-import { gameEventEmitter, GameEvents } from '../events'
+import { gameEventEmitter, GameEvents, pendingLevelId, setPendingLevel } from '../events'
 import { getLevelById } from '../../data/levels'
 import type { LevelConfig } from '../../types'
 
@@ -101,8 +101,11 @@ export class PlayScene extends Phaser.Scene {
     // Store obstacle group reference for spawner setup
     this.data.set('obstacleGroup', this.physics.add.group())
 
-    // Signal to React that the scene is ready to receive events
-    gameEventEmitter.emit(GameEvents.SCENE_READY)
+    // Check if React already set a level to start (avoids race condition)
+    if (pendingLevelId !== null) {
+      this.startLevel(pendingLevelId)
+      setPendingLevel(null)
+    }
   }
 
   private startLevel(levelId: number) {

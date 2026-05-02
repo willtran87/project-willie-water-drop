@@ -6,7 +6,7 @@ import { TriviaModal } from '../components/game/TriviaModal'
 import { GameOverOverlay } from '../components/game/GameOverOverlay'
 import { useScores } from '../hooks/useScores'
 import { useGameProgress } from '../hooks/useGameProgress'
-import { gameEventEmitter, GameEvents } from '../game/events'
+import { gameEventEmitter, GameEvents, setPendingLevel } from '../game/events'
 import { getLevelById } from '../data/levels'
 import { trivia } from '../data/trivia'
 
@@ -21,15 +21,14 @@ export function GamePage() {
   const level = getLevelById(Number(levelId))
   const triviaQuestion = level ? trivia[level.id] : null
 
-  // Start level once PlayScene signals it's ready
+  // Set the pending level for PlayScene to pick up in create(),
+  // and also emit START_LEVEL for when PlayScene is already running.
   useEffect(() => {
     if (!level) return
-    const onSceneReady = () => {
-      gameEventEmitter.emit(GameEvents.START_LEVEL, level.id)
-    }
-    gameEventEmitter.on(GameEvents.SCENE_READY, onSceneReady)
+    setPendingLevel(level.id)
+    gameEventEmitter.emit(GameEvents.START_LEVEL, level.id)
     return () => {
-      gameEventEmitter.off(GameEvents.SCENE_READY, onSceneReady)
+      setPendingLevel(null)
     }
   }, [level])
 
