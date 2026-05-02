@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
-/* Game canvas responsive scaling */
+/* Game canvas responsive scaling — CSS handles sizing, not Phaser's scale manager */
+#phaser-game-container {
+  max-width: 1000px;
+  width: 100%;
+}
+
 #phaser-game-container canvas {
-  max-width: 100%;
+  width: 100% !important;
   height: auto !important;
 }
 

@@ -19,8 +19,8 @@ export function createGameConfig(parent: string): Phaser.Types.Core.GameConfig {
     },
     scene: [PreloadScene, PlayScene],
     scale: {
-      mode: Phaser.Scale.FIT,
-      autoCenter: Phaser.Scale.CENTER_BOTH,
+      mode: Phaser.Scale.NONE,
+      autoCenter: Phaser.Scale.NO_CENTER,
     },
   }
 }
