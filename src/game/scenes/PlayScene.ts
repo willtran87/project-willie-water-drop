@@ -18,6 +18,7 @@ export class PlayScene extends Phaser.Scene {
   private isGameRunning = false
   private isDead = false
   private scoreTimer?: Phaser.Time.TimerEvent
+  private collider?: Phaser.Physics.Arcade.Collider
 
   private jumpParticles!: Phaser.GameObjects.Particles.ParticleEmitter
   private trailParticles!: Phaser.GameObjects.Particles.ParticleEmitter
@@ -94,8 +95,8 @@ export class PlayScene extends Phaser.Scene {
     gameEventEmitter.on(GameEvents.START_LEVEL, this.startLevel, this)
     gameEventEmitter.on(GameEvents.RESTART, this.restartLevel, this)
     gameEventEmitter.on(GameEvents.TRIVIA_ANSWERED, this.onTriviaAnswered, this)
-    gameEventEmitter.on(GameEvents.PAUSE, () => this.scene.pause())
-    gameEventEmitter.on(GameEvents.RESUME, () => this.scene.resume())
+    gameEventEmitter.on(GameEvents.PAUSE, this.onPause, this)
+    gameEventEmitter.on(GameEvents.RESUME, this.onResume, this)
 
     // Store obstacle group reference for spawner setup
     this.data.set('obstacleGroup', this.physics.add.group())
@@ -116,8 +117,9 @@ export class PlayScene extends Phaser.Scene {
     const obstacleGroup = this.data.get('obstacleGroup') as Phaser.Physics.Arcade.Group
     this.obstacleSpawner = new ObstacleSpawner(this, config, height - 30, obstacleGroup)
 
-    // Collision
-    this.physics.add.collider(this.player, obstacleGroup, () => this.onPlayerHit())
+    // Collision — destroy previous collider to avoid accumulation on restart
+    this.collider?.destroy()
+    this.collider = this.physics.add.collider(this.player, obstacleGroup, () => this.onPlayerHit())
 
     // Start player running
     this.player.setPosition(50, height - 30)
@@ -249,7 +251,10 @@ export class PlayScene extends Phaser.Scene {
     gameEventEmitter.off(GameEvents.START_LEVEL, this.startLevel, this)
     gameEventEmitter.off(GameEvents.RESTART, this.restartLevel, this)
     gameEventEmitter.off(GameEvents.TRIVIA_ANSWERED, this.onTriviaAnswered, this)
-    gameEventEmitter.removeAllListeners(GameEvents.PAUSE)
-    gameEventEmitter.removeAllListeners(GameEvents.RESUME)
+    gameEventEmitter.off(GameEvents.PAUSE, this.onPause, this)
+    gameEventEmitter.off(GameEvents.RESUME, this.onResume, this)
   }
+
+  private onPause() { this.scene.pause() }
+  private onResume() { this.scene.resume() }
 }

@@ -13,7 +13,7 @@ import { trivia } from '../data/trivia'
 export function GamePage() {
   const { levelId } = useParams<{ levelId: string }>()
   const navigate = useNavigate()
-  const { isDead, objectiveReached, score, jumps } = useScores()
+  const { isDead, objectiveReached, score, jumps, target } = useScores()
   const { completeLevel, addJumps, addDeath } = useGameProgress()
 
   const [showTrivia, setShowTrivia] = useState(false)
@@ -59,9 +59,14 @@ export function GamePage() {
       setShowTrivia(false)
       if (correct) {
         navigate('/levels')
+      } else {
+        // Restart the level after incorrect answer
+        gameEventEmitter.emit(GameEvents.RESTART)
       }
     }, 2000)
   }, [level, score, jumps, completeLevel, addJumps, navigate])
+
+  const handleReady = useCallback(() => setGameReady(true), [])
 
   const handleRestart = useCallback(() => {
     setShowTrivia(false)
@@ -77,11 +82,11 @@ export function GamePage() {
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col">
-      <HudOverlay dayNumber={level.day} levelInDay={level.levelInDay} />
+      <HudOverlay dayNumber={level.day} levelInDay={level.levelInDay} score={score} target={target} jumps={jumps} />
       <div className="flex-1 flex items-center justify-center relative">
         <PhaserGame
           className="w-full max-w-[1000px]"
-          onReady={() => setGameReady(true)}
+          onReady={handleReady}
         />
         {showTrivia && triviaQuestion && (
           <TriviaModal question={triviaQuestion} onAnswer={handleTriviaAnswer} />

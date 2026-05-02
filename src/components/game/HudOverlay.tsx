@@ -1,13 +1,12 @@
-import { useScores } from '../../hooks/useScores'
-
 interface HudOverlayProps {
   dayNumber: number
   levelInDay: number
+  score: number
+  target: number | null
+  jumps: number
 }
 
-export function HudOverlay({ dayNumber, levelInDay }: HudOverlayProps) {
-  const { score, target, jumps } = useScores()
-
+export function HudOverlay({ dayNumber, levelInDay, score, target, jumps }: HudOverlayProps) {
   const progress = target ? Math.min((score / target) * 100, 100) : 0
 
   return (
