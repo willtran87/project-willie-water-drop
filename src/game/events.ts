@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 
 export const GameEvents = {
   // Phaser -> React
+  SCENE_READY: 'scene-ready',
   SCORE_CHANGED: 'score-changed',
   OBJECTIVE_REACHED: 'objective-reached',
   PLAYER_DIED: 'player-died',

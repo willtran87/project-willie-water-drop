@@ -17,19 +17,21 @@ export function GamePage() {
   const { completeLevel, addJumps, addDeath } = useGameProgress()
 
   const [showTrivia, setShowTrivia] = useState(false)
-  const [gameReady, setGameReady] = useState(false)
 
   const level = getLevelById(Number(levelId))
   const triviaQuestion = level ? trivia[level.id] : null
 
-  // Start level once game is ready
+  // Start level once PlayScene signals it's ready
   useEffect(() => {
-    if (!gameReady || !level) return
-    const timer = setTimeout(() => {
+    if (!level) return
+    const onSceneReady = () => {
       gameEventEmitter.emit(GameEvents.START_LEVEL, level.id)
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [gameReady, level])
+    }
+    gameEventEmitter.on(GameEvents.SCENE_READY, onSceneReady)
+    return () => {
+      gameEventEmitter.off(GameEvents.SCENE_READY, onSceneReady)
+    }
+  }, [level])
 
   // Show trivia when objective reached
   useEffect(() => {
@@ -66,8 +68,6 @@ export function GamePage() {
     }, 2000)
   }, [level, score, jumps, completeLevel, addJumps, navigate])
 
-  const handleReady = useCallback(() => setGameReady(true), [])
-
   const handleRestart = useCallback(() => {
     setShowTrivia(false)
   }, [])
@@ -84,10 +84,7 @@ export function GamePage() {
     <div className="min-h-screen bg-slate-900 flex flex-col">
       <HudOverlay dayNumber={level.day} levelInDay={level.levelInDay} score={score} target={target} jumps={jumps} />
       <div className="flex-1 flex items-center justify-center relative">
-        <PhaserGame
-          className="w-full max-w-[1000px]"
-          onReady={handleReady}
-        />
+        <PhaserGame className="w-full max-w-[1000px]" />
         {showTrivia && triviaQuestion && (
           <TriviaModal question={triviaQuestion} onAnswer={handleTriviaAnswer} />
         )}

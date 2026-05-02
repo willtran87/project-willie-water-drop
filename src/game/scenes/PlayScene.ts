@@ -100,6 +100,9 @@ export class PlayScene extends Phaser.Scene {
 
     // Store obstacle group reference for spawner setup
     this.data.set('obstacleGroup', this.physics.add.group())
+
+    // Signal to React that the scene is ready to receive events
+    gameEventEmitter.emit(GameEvents.SCENE_READY)
   }
 
   private startLevel(levelId: number) {
