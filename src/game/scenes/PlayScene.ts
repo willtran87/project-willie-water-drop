@@ -1,0 +1,220 @@
+import Phaser from 'phaser'
+import { Player } from '../objects/Player'
+import { ObstacleSpawner } from '../objects/ObstacleSpawner'
+import { gameEventEmitter, GameEvents } from '../events'
+import { getLevelById } from '../../data/levels'
+import type { LevelConfig } from '../../types'
+
+export class PlayScene extends Phaser.Scene {
+  private player!: Player
+  private obstacleSpawner!: ObstacleSpawner
+  private ground!: Phaser.GameObjects.TileSprite
+  private clouds: Phaser.GameObjects.Image[] = []
+  private trees: Phaser.GameObjects.Image[] = []
+
+  private config!: LevelConfig
+  private gameSpeed = 0
+  private score = 0
+  private isGameRunning = false
+  private isDead = false
+  private scoreTimer?: Phaser.Time.TimerEvent
+
+  private hitSound!: Phaser.Sound.BaseSound
+  private reachSound!: Phaser.Sound.BaseSound
+
+  constructor() {
+    super('PlayScene')
+  }
+
+  create() {
+    const { width, height } = this.scale
+
+    // Ground
+    this.ground = this.add.tileSprite(0, height, width, 26, 'ground')
+      .setOrigin(0, 1)
+      .setDepth(10)
+
+    // Clouds (parallax layer)
+    this.clouds = [
+      this.add.image(width / 2, 50, 'cloud').setDepth(0).setAlpha(0.6),
+      this.add.image(width - 80, 30, 'cloud').setDepth(0).setAlpha(0.4).setScale(0.8),
+      this.add.image(width / 4, 70, 'cloud').setDepth(0).setAlpha(0.5).setScale(0.6),
+    ]
+
+    // Background trees (parallax)
+    this.trees = [
+      this.add.image(width * 0.3, height - 70, 'tree').setDepth(1).setAlpha(0.3).setScale(0.6),
+      this.add.image(width * 0.7, height - 60, 'tree').setDepth(2).setAlpha(0.5).setScale(0.8),
+      this.add.image(width * 1.2, height - 65, 'tree').setDepth(1).setAlpha(0.4).setScale(0.7),
+    ]
+
+    // Player
+    this.player = new Player(this, 50, height - 30)
+
+    // Sounds
+    this.hitSound = this.sound.add('hit', { volume: 0.2 })
+    this.reachSound = this.sound.add('reach', { volume: 0.2 })
+
+    // Input
+    if (this.input.keyboard) {
+      this.input.keyboard.on('keydown-SPACE', () => this.handleJump())
+    }
+    this.input.on('pointerdown', () => this.handleJump())
+
+    // Listen for React events
+    gameEventEmitter.on(GameEvents.START_LEVEL, this.startLevel, this)
+    gameEventEmitter.on(GameEvents.RESTART, this.restartLevel, this)
+    gameEventEmitter.on(GameEvents.TRIVIA_ANSWERED, this.onTriviaAnswered, this)
+    gameEventEmitter.on(GameEvents.PAUSE, () => this.scene.pause())
+    gameEventEmitter.on(GameEvents.RESUME, () => this.scene.resume())
+
+    // Store obstacle group reference for spawner setup
+    this.data.set('obstacleGroup', this.physics.add.group())
+  }
+
+  private startLevel(levelId: number) {
+    const config = getLevelById(levelId)
+    if (!config) return
+
+    this.config = config
+    this.gameSpeed = config.startSpeed
+    this.score = 0
+    this.isGameRunning = true
+    this.isDead = false
+
+    // Set up spawner
+    const { height } = this.scale
+    const obstacleGroup = this.data.get('obstacleGroup') as Phaser.Physics.Arcade.Group
+    this.obstacleSpawner = new ObstacleSpawner(this, config, height - 30, obstacleGroup)
+
+    // Collision
+    this.physics.add.collider(this.player, obstacleGroup, () => this.onPlayerHit())
+
+    // Start player running
+    this.player.setPosition(50, height - 30)
+    this.player.startRunning()
+    this.player.resetJumpCount()
+
+    // Score timer: +1 every 100ms
+    this.scoreTimer = this.time.addEvent({
+      delay: 100,
+      callback: this.incrementScore,
+      callbackScope: this,
+      loop: true,
+    })
+
+    gameEventEmitter.emit(GameEvents.GAME_STARTED, { levelId })
+    gameEventEmitter.emit(GameEvents.SCORE_CHANGED, { score: 0, target: config.objective })
+  }
+
+  private restartLevel() {
+    if (!this.config) return
+    this.obstacleSpawner.reset()
+    this.scoreTimer?.remove()
+    this.physics.resume()
+    this.startLevel(this.config.id)
+  }
+
+  private handleJump() {
+    if (!this.isGameRunning || this.isDead) return
+    this.player.jump()
+  }
+
+  private incrementScore() {
+    if (!this.isGameRunning || this.isDead) return
+
+    this.score++
+    this.gameSpeed = this.config.startSpeed + this.score * this.config.speedIncrement
+
+    gameEventEmitter.emit(GameEvents.SCORE_CHANGED, {
+      score: this.score,
+      target: this.config.objective,
+      jumps: this.player.getJumpCount(),
+    })
+
+    // Milestone sound every 100 points
+    if (this.score % 100 === 0 && this.score > 0) {
+      this.reachSound.play()
+    }
+
+    // Check objective
+    if (this.config.objective && this.score >= this.config.objective) {
+      this.onObjectiveReached()
+    }
+  }
+
+  private onObjectiveReached() {
+    this.isGameRunning = false
+    this.scoreTimer?.remove()
+    this.physics.pause()
+    this.player.celebrate()
+
+    gameEventEmitter.emit(GameEvents.OBJECTIVE_REACHED, {
+      score: this.score,
+      jumps: this.player.getJumpCount(),
+      levelId: this.config.id,
+    })
+  }
+
+  private onPlayerHit() {
+    if (this.isDead) return
+    this.isDead = true
+    this.isGameRunning = false
+    this.scoreTimer?.remove()
+    this.physics.pause()
+
+    this.player.hurt()
+    this.hitSound.play()
+
+    // Screen shake
+    this.cameras.main.shake(200, 0.01)
+
+    gameEventEmitter.emit(GameEvents.PLAYER_DIED, {
+      score: this.score,
+      jumps: this.player.getJumpCount(),
+      levelId: this.config.id,
+    })
+  }
+
+  private onTriviaAnswered(correct: boolean) {
+    if (correct) {
+      this.player.celebrate()
+    } else {
+      this.player.sob()
+    }
+  }
+
+  update() {
+    if (!this.isGameRunning || this.isDead) return
+
+    // Scroll ground
+    this.ground.tilePositionX += this.gameSpeed * 0.5
+
+    // Parallax clouds
+    this.clouds.forEach((cloud, i) => {
+      cloud.x -= 0.5 + i * 0.1
+      if (cloud.x + cloud.width / 2 < 0) {
+        cloud.x = this.scale.width + cloud.width / 2
+      }
+    })
+
+    // Parallax trees
+    this.trees.forEach((tree, i) => {
+      tree.x -= this.gameSpeed * (0.2 + i * 0.1)
+      if (tree.x + tree.width / 2 < 0) {
+        tree.x = this.scale.width + tree.width / 2 + Math.random() * 200
+      }
+    })
+
+    // Update obstacles
+    this.obstacleSpawner.update(this.gameSpeed, this.scale.width)
+  }
+
+  shutdown() {
+    gameEventEmitter.off(GameEvents.START_LEVEL, this.startLevel, this)
+    gameEventEmitter.off(GameEvents.RESTART, this.restartLevel, this)
+    gameEventEmitter.off(GameEvents.TRIVIA_ANSWERED, this.onTriviaAnswered, this)
+    gameEventEmitter.removeAllListeners(GameEvents.PAUSE)
+    gameEventEmitter.removeAllListeners(GameEvents.RESUME)
+  }
+}
