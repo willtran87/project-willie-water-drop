@@ -7,7 +7,7 @@ const ANIMATED_OBSTACLES: Record<string, { animKey: string; yOffset: number }> =
   'root-ball': { animKey: 'floating-root-ball', yOffset: -60 },
 }
 
-const POOL_SIZE = 5
+const POOL_SIZE = 8
 
 export class ObstacleSpawner {
   private pool: Obstacle[] = []
@@ -22,11 +22,13 @@ export class ObstacleSpawner {
     public group: Phaser.Physics.Arcade.Group,
   ) {
     this.config = config
+
     for (let i = 0; i < POOL_SIZE; i++) {
       const obstacle = new Obstacle(scene, -100, -100, config.obstacleTypes[0])
       this.pool.push(obstacle)
       group.add(obstacle)
     }
+
     this.nextSpawnDistance = this.randomDistance()
   }
 
@@ -37,15 +39,20 @@ export class ObstacleSpawner {
       if (obstacle.isOffScreen()) { obstacle.recycle() }
     })
 
-    this.lastSpawnX += gameSpeed
+    // Scale spawn accumulation by spawnRateMultiplier (higher = more frequent)
+    this.lastSpawnX += gameSpeed * (this.config.spawnRateMultiplier / 0.08)
     if (this.lastSpawnX >= this.nextSpawnDistance) {
-      this.spawn(cameraRight)
+      if (this.config.obstaclePattern === 'grouped') {
+        this.spawnGrouped(cameraRight)
+      } else {
+        this.spawnSingle(cameraRight)
+      }
       this.lastSpawnX = 0
       this.nextSpawnDistance = this.randomDistance()
     }
   }
 
-  private spawn(cameraRight: number) {
+  private spawnSingle(cameraRight: number) {
     const obstacle = this.getInactive()
     if (!obstacle) return
     const typeIndex = Math.floor(Math.random() * this.config.obstacleTypes.length)
@@ -53,6 +60,34 @@ export class ObstacleSpawner {
     const animated = ANIMATED_OBSTACLES[type]
     const y = this.groundY + (animated?.yOffset ?? 0)
     obstacle.spawn(cameraRight + 100, y, type, animated?.animKey)
+  }
+
+  private spawnGrouped(cameraRight: number) {
+    const pattern = Math.floor(Math.random() * 3)
+    const type1Index = Math.floor(Math.random() * 6) // hydrants only for grouped
+    const type2Index = Math.floor(Math.random() * 6)
+    const type1 = this.config.obstacleTypes[type1Index]
+    const type2 = this.config.obstacleTypes[type2Index]
+
+    const obs1 = this.getInactive()
+    const obs2 = this.getInactive()
+    if (!obs1 || !obs2) return
+
+    const baseX = cameraRight + 100
+    switch (pattern) {
+      case 0: // high + ground, separated
+        obs1.spawn(baseX, this.groundY - 220, type1)
+        obs2.spawn(baseX + 500, this.groundY, type2)
+        break
+      case 1: // ground + high, separated
+        obs1.spawn(baseX, this.groundY, type1)
+        obs2.spawn(baseX + 500, this.groundY - 220, type2)
+        break
+      case 2: // two mid-height, close together
+        obs1.spawn(baseX, this.groundY - 20, type1)
+        obs2.spawn(baseX + 300, this.groundY - 20, type2)
+        break
+    }
   }
 
   private getInactive(): Obstacle | null {

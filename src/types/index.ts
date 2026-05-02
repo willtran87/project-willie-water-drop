@@ -5,9 +5,16 @@ export interface LevelConfig {
   objective: number | null
   startSpeed: number
   speedIncrement: number
+  spawnRateMultiplier: number
   obstacleTypes: string[]
+  obstaclePattern: 'random' | 'grouped'
   spawnRange: [number, number]
-  background: string
+  backgroundColor: string
+  canDoubleJump: boolean
+  jumpVelocity: number
+  playerType: 'willie' | 'jet-willie'
+  canvasSize: [number, number]
+  waterTower: string
   isBonus: boolean
 }
 

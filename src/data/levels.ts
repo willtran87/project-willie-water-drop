@@ -1,46 +1,48 @@
 import type { LevelConfig } from '../types'
 
-export const levels: LevelConfig[] = [
-  // Day 1
-  { id: 11, day: 1, levelInDay: 1, objective: 400, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [600, 900], background: 'day', isBonus: false },
-  { id: 12, day: 1, levelInDay: 2, objective: 800, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [600, 900], background: 'day', isBonus: false },
-  { id: 13, day: 1, levelInDay: 3, objective: 1200, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [600, 900], background: 'day', isBonus: false },
-  { id: 14, day: 1, levelInDay: 4, objective: 1600, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [600, 900], background: 'day', isBonus: false },
-  { id: 15, day: 1, levelInDay: 5, objective: 2000, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [600, 900], background: 'day', isBonus: false },
-  { id: 16, day: 1, levelInDay: 6, objective: null, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [600, 900], background: 'day', isBonus: true },
+// Day-specific defaults
+const DAY_DEFAULTS: Record<number, Partial<LevelConfig>> = {
+  1: { speedIncrement: 0.01, spawnRateMultiplier: 0.08, backgroundColor: '#DEE8F3', canDoubleJump: false, jumpVelocity: -1600, playerType: 'willie', canvasSize: [1000, 340], waterTower: 'water-tower-2', obstaclePattern: 'random' },
+  2: { speedIncrement: 0.01, spawnRateMultiplier: 0.08, backgroundColor: '#EDEDED', canDoubleJump: true, jumpVelocity: -1600, playerType: 'willie', canvasSize: [1000, 340], waterTower: 'water-tower-1', obstaclePattern: 'random' },
+  3: { speedIncrement: 0.01, spawnRateMultiplier: 0.08, backgroundColor: '#EDEDED', canDoubleJump: true, jumpVelocity: -1600, playerType: 'willie', canvasSize: [1000, 340], waterTower: 'water-tower-2', obstaclePattern: 'random' },
+  4: { speedIncrement: 0.008, spawnRateMultiplier: 0.015, backgroundColor: '#EDEDED', canDoubleJump: true, jumpVelocity: -1600, playerType: 'willie', canvasSize: [1000, 340], waterTower: 'water-tower-1', obstaclePattern: 'grouped' },
+  5: { speedIncrement: 0.005, spawnRateMultiplier: 0.02, backgroundColor: '#EDEDED', canDoubleJump: false, jumpVelocity: -800, playerType: 'jet-willie', canvasSize: [1200, 420], waterTower: 'water-tower-2', obstaclePattern: 'random' },
+}
 
-  // Day 2
-  { id: 21, day: 2, levelInDay: 1, objective: 400, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [550, 850], background: 'day', isBonus: false },
-  { id: 22, day: 2, levelInDay: 2, objective: 800, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [550, 850], background: 'day', isBonus: false },
-  { id: 23, day: 2, levelInDay: 3, objective: 1200, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [550, 850], background: 'day', isBonus: false },
-  { id: 24, day: 2, levelInDay: 4, objective: 1600, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [550, 850], background: 'day', isBonus: false },
-  { id: 25, day: 2, levelInDay: 5, objective: 2000, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [550, 850], background: 'day', isBonus: false },
-  { id: 26, day: 2, levelInDay: 6, objective: null, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [550, 850], background: 'day', isBonus: true },
+const OBSTACLE_TYPES = ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter']
 
-  // Day 3
-  { id: 31, day: 3, levelInDay: 1, objective: 400, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [500, 800], background: 'day', isBonus: false },
-  { id: 32, day: 3, levelInDay: 2, objective: 800, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [500, 800], background: 'day', isBonus: false },
-  { id: 33, day: 3, levelInDay: 3, objective: 1200, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [500, 800], background: 'day', isBonus: false },
-  { id: 34, day: 3, levelInDay: 4, objective: 1600, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [500, 800], background: 'day', isBonus: false },
-  { id: 35, day: 3, levelInDay: 5, objective: 2000, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [500, 800], background: 'day', isBonus: false },
-  { id: 36, day: 3, levelInDay: 6, objective: null, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [500, 800], background: 'day', isBonus: true },
+const SPAWN_RANGES: Record<number, [number, number]> = {
+  1: [600, 900], 2: [550, 850], 3: [500, 800], 4: [450, 750], 5: [400, 700],
+}
 
-  // Day 4
-  { id: 41, day: 4, levelInDay: 1, objective: 400, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [450, 750], background: 'day', isBonus: false },
-  { id: 42, day: 4, levelInDay: 2, objective: 800, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [450, 750], background: 'day', isBonus: false },
-  { id: 43, day: 4, levelInDay: 3, objective: 1200, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [450, 750], background: 'day', isBonus: false },
-  { id: 44, day: 4, levelInDay: 4, objective: 1600, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [450, 750], background: 'day', isBonus: false },
-  { id: 45, day: 4, levelInDay: 5, objective: 2000, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [450, 750], background: 'day', isBonus: false },
-  { id: 46, day: 4, levelInDay: 6, objective: null, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [450, 750], background: 'day', isBonus: true },
+const OBJECTIVES = [400, 800, 1200, 1600, 2000]
 
-  // Day 5
-  { id: 51, day: 5, levelInDay: 1, objective: 400, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [400, 700], background: 'day', isBonus: false },
-  { id: 52, day: 5, levelInDay: 2, objective: 800, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [400, 700], background: 'day', isBonus: false },
-  { id: 53, day: 5, levelInDay: 3, objective: 1200, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [400, 700], background: 'day', isBonus: false },
-  { id: 54, day: 5, levelInDay: 4, objective: 1600, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [400, 700], background: 'day', isBonus: false },
-  { id: 55, day: 5, levelInDay: 5, objective: 2000, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [400, 700], background: 'day', isBonus: false },
-  { id: 56, day: 5, levelInDay: 6, objective: null, startSpeed: 10, speedIncrement: 0.01, obstacleTypes: ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter'], spawnRange: [400, 700], background: 'day', isBonus: true },
-]
+function makeLevels(): LevelConfig[] {
+  const result: LevelConfig[] = []
+  for (let day = 1; day <= 5; day++) {
+    const defaults = DAY_DEFAULTS[day]
+    for (let lvl = 1; lvl <= 6; lvl++) {
+      const isBonus = lvl === 6
+      let objective: number | null = isBonus ? null : OBJECTIVES[lvl - 1]
+      // Day 2 Level 1 has a special objective of 4000
+      if (day === 2 && lvl === 1) objective = 4000
+      result.push({
+        id: day * 10 + lvl,
+        day,
+        levelInDay: lvl,
+        objective,
+        startSpeed: 10,
+        obstacleTypes: OBSTACLE_TYPES,
+        spawnRange: SPAWN_RANGES[day],
+        isBonus,
+        ...defaults,
+      } as LevelConfig)
+    }
+  }
+  return result
+}
+
+export const levels: LevelConfig[] = makeLevels()
 
 export function getLevelById(id: number): LevelConfig | undefined {
   return levels.find(l => l.id === id)

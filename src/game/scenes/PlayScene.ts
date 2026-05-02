@@ -118,6 +118,14 @@ export class PlayScene extends Phaser.Scene {
     this.isGameRunning = true
     this.isDead = false
 
+    // Apply per-day settings
+    this.cameras.main.setBackgroundColor(config.backgroundColor)
+    this.player.configure({
+      doubleJump: config.canDoubleJump,
+      jumpVelocity: config.jumpVelocity,
+      playerType: config.playerType,
+    })
+
     // Set up spawner
     const { height } = this.scale
     const obstacleGroup = this.data.get('obstacleGroup') as Phaser.Physics.Arcade.Group
