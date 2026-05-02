@@ -83,7 +83,7 @@ export function GamePage() {
     <div className="min-h-screen bg-slate-900 flex flex-col">
       <HudOverlay dayNumber={level.day} levelInDay={level.levelInDay} score={score} target={target} jumps={jumps} />
       <div className="flex-1 flex items-center justify-center relative">
-        <PhaserGame className="w-full max-w-[1000px]" />
+        <PhaserGame key={levelId} className="w-full max-w-[1000px]" />
         {showTrivia && triviaQuestion && (
           <TriviaModal question={triviaQuestion} onAnswer={handleTriviaAnswer} />
         )}
