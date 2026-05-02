@@ -61,7 +61,7 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    this.anims.create({ key: 'willie-run', frames: this.anims.generateFrameNumbers('willie', { start: 0, end: 1 }), frameRate: 10, repeat: -1 })
+    this.anims.create({ key: 'willie-run', frames: this.anims.generateFrameNumbers('willie', { start: 2, end: 3 }), frameRate: 10, repeat: -1 })
     this.anims.create({ key: 'floating-water-meter', frames: this.anims.generateFrameNumbers('water-meter', { start: 0, end: 3 }), frameRate: 10, repeat: -1 })
     this.anims.create({ key: 'floating-root-ball', frames: this.anims.generateFrameNumbers('root-ball', { start: 0, end: 1 }), frameRate: 6, repeat: -1 })
     this.anims.create({ key: 'vroom-vroom', frames: this.anims.generateFrameNumbers('vroom-vroom_small', { start: 0, end: 1 }), frameRate: 6, repeat: -1 })
