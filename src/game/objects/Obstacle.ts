@@ -12,6 +12,8 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
     body.setImmovable(true)
     body.setAllowGravity(false)
 
+    // Origin at bottom-center so sprites sit ON the ground, not half-buried
+    this.setOrigin(0.5, 1)
     this.setDepth(50)
     this.setActive(false)
     this.setVisible(false)
