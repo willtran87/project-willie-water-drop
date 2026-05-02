@@ -6,7 +6,7 @@ const DAY_DEFAULTS: Record<number, Partial<LevelConfig>> = {
   2: { speedIncrement: 0.01, spawnRateMultiplier: 0.08, backgroundColor: '#EDEDED', canDoubleJump: true, jumpVelocity: -1600, playerType: 'willie', canvasSize: [1000, 340], waterTower: 'water-tower-1', obstaclePattern: 'random' },
   3: { speedIncrement: 0.01, spawnRateMultiplier: 0.08, backgroundColor: '#EDEDED', canDoubleJump: true, jumpVelocity: -1600, playerType: 'willie', canvasSize: [1000, 340], waterTower: 'water-tower-2', obstaclePattern: 'random' },
   4: { speedIncrement: 0.008, spawnRateMultiplier: 0.015, backgroundColor: '#EDEDED', canDoubleJump: true, jumpVelocity: -1600, playerType: 'willie', canvasSize: [1000, 340], waterTower: 'water-tower-1', obstaclePattern: 'grouped' },
-  5: { speedIncrement: 0.005, spawnRateMultiplier: 0.02, backgroundColor: '#EDEDED', canDoubleJump: false, jumpVelocity: -800, playerType: 'jet-willie', canvasSize: [1200, 420], waterTower: 'water-tower-2', obstaclePattern: 'random' },
+  5: { speedIncrement: 0.005, spawnRateMultiplier: 0.02, backgroundColor: '#EDEDED', canDoubleJump: false, jumpVelocity: -1000, playerType: 'jet-willie', canvasSize: [1200, 420], waterTower: 'water-tower-2', obstaclePattern: 'random' },
 }
 
 const OBSTACLE_TYPES = ['obsticle-1', 'obsticle-2', 'obsticle-3', 'obsticle-4', 'obsticle-5', 'obsticle-6', 'water-meter']
