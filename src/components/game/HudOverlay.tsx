@@ -13,26 +13,26 @@ export function HudOverlay({ dayNumber, levelInDay }: HudOverlayProps) {
   return (
     <div className="w-full">
       {/* Top HUD bar */}
-      <div className="flex justify-between items-center px-6 py-3 bg-black/40">
+      <div className="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-6 py-2 sm:py-3 bg-black/40 gap-2">
         <div className="text-sm text-white/60">
           DAY {dayNumber} — LEVEL {levelInDay}
         </div>
-        <div className="flex gap-6 items-center">
+        <div className="flex gap-4 sm:gap-6 items-center">
           <div>
-            <span className="text-xs text-white/50 mr-2">SCORE</span>
-            <span className="text-xl font-bold text-sky-400">
+            <span className="text-[10px] sm:text-xs text-white/50 mr-1 sm:mr-2">SCORE</span>
+            <span className="text-base sm:text-xl font-bold text-sky-400">
               {String(score).padStart(5, '0')}
             </span>
           </div>
           {target && (
             <div>
-              <span className="text-xs text-white/50 mr-2">TARGET</span>
-              <span className="text-xl font-bold text-white">{target}</span>
+              <span className="text-[10px] sm:text-xs text-white/50 mr-1 sm:mr-2">TARGET</span>
+              <span className="text-base sm:text-xl font-bold text-white">{target}</span>
             </div>
           )}
           <div>
-            <span className="text-xs text-white/50 mr-2">JUMPS</span>
-            <span className="text-xl font-bold text-white">{jumps}</span>
+            <span className="text-[10px] sm:text-xs text-white/50 mr-1 sm:mr-2">JUMPS</span>
+            <span className="text-base sm:text-xl font-bold text-white">{jumps}</span>
           </div>
         </div>
       </div>
