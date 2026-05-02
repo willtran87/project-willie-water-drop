@@ -74,31 +74,24 @@ export class ObstacleSpawner {
   }
 
   private spawnGrouped(cameraRight: number) {
+    // Day 4 grouped pattern: two water-meters per spawn (matching original)
+    // Original heights: [250, 250, 50] and [0, 0, 50] offset from canvas bottom
+    // Original distances: [600, 100, 100] and [100, 600, 400]
     const pattern = Math.floor(Math.random() * 3)
-    const type1Index = Math.floor(Math.random() * 6) // hydrants only for grouped
-    const type2Index = Math.floor(Math.random() * 6)
-    const type1 = this.config.obstacleTypes[type1Index]
-    const type2 = this.config.obstacleTypes[type2Index]
+    const heights1 = [250, 250, 50]
+    const distances1 = [600, 100, 100]
+    const heights2 = [0, 0, 50]
+    const distances2 = [100, 600, 400]
 
     const obs1 = this.getInactive()
     const obs2 = this.getInactive()
     if (!obs1 || !obs2) return
 
-    const baseX = cameraRight + 100
-    switch (pattern) {
-      case 0: // high + ground, separated
-        obs1.spawn(baseX, this.groundY - 220, type1)
-        obs2.spawn(baseX + 500, this.groundY, type2)
-        break
-      case 1: // ground + high, separated
-        obs1.spawn(baseX, this.groundY, type1)
-        obs2.spawn(baseX + 500, this.groundY - 220, type2)
-        break
-      case 2: // two mid-height, close together
-        obs1.spawn(baseX, this.groundY - 20, type1)
-        obs2.spawn(baseX + 300, this.groundY - 20, type2)
-        break
-    }
+    const canvasH = this.scene.scale.height
+    const baseX = this.scene.scale.width
+
+    obs1.spawn(baseX + distances1[pattern], canvasH - heights1[pattern], 'water-meter', 'floating-water-meter')
+    obs2.spawn(baseX + distances2[pattern], canvasH - heights2[pattern], 'water-meter', 'floating-water-meter')
   }
 
   private getInactive(): Obstacle | null {
