@@ -1,4 +1,4 @@
-import { EventEmitter } from 'phaser'
+import Phaser from 'phaser'
 
 export const GameEvents = {
   // Phaser -> React
@@ -15,4 +15,4 @@ export const GameEvents = {
   RESUME: 'resume',
 } as const
 
-export const gameEventEmitter = new EventEmitter()
+export const gameEventEmitter = new Phaser.Events.EventEmitter()
