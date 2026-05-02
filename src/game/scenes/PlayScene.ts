@@ -129,7 +129,7 @@ export class PlayScene extends Phaser.Scene {
     // Set up spawner
     const { height } = this.scale
     const obstacleGroup = this.data.get('obstacleGroup') as Phaser.Physics.Arcade.Group
-    this.obstacleSpawner = new ObstacleSpawner(this, config, height - 30, obstacleGroup)
+    this.obstacleSpawner = new ObstacleSpawner(this, config, height, obstacleGroup)
 
     // Collision — destroy previous collider to avoid accumulation on restart
     this.collider?.destroy()

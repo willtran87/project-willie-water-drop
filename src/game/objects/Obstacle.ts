@@ -24,6 +24,15 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
     this.setVisible(true)
     this.animKey = animKey ?? null
     if (animKey) { this.play(animKey) }
+
+    // Tighten collision body to match original (slightly smaller than sprite)
+    const body = this.body as Phaser.Physics.Arcade.Body
+    if (texture === 'water-meter') {
+      body.setSize(body.width - 25, body.height / 1.5)
+    } else if (texture.startsWith('obsticle')) {
+      body.setOffset(0, 5)
+      body.setSize(body.width - 10, body.height / 1.5)
+    }
   }
 
   moveLeft(speed: number) { this.x -= speed }

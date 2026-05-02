@@ -2,9 +2,12 @@ import Phaser from 'phaser'
 import { Obstacle } from './Obstacle'
 import type { LevelConfig } from '../../types'
 
-const ANIMATED_OBSTACLES: Record<string, { animKey: string; yOffset: number }> = {
-  'water-meter': { animKey: 'floating-water-meter', yOffset: 0 },
-  'root-ball': { animKey: 'floating-root-ball', yOffset: -60 },
+// Water-meter floats at two random heights above ground (matching original)
+const WATER_METER_HEIGHTS = [-22, -104]
+
+const ANIMATED_OBSTACLES: Record<string, { animKey: string }> = {
+  'water-meter': { animKey: 'floating-water-meter' },
+  'root-ball': { animKey: 'floating-root-ball' },
 }
 
 const POOL_SIZE = 8
@@ -58,7 +61,15 @@ export class ObstacleSpawner {
     const typeIndex = Math.floor(Math.random() * this.config.obstacleTypes.length)
     const type = this.config.obstacleTypes[typeIndex]
     const animated = ANIMATED_OBSTACLES[type]
-    const y = this.groundY + (animated?.yOffset ?? 0)
+
+    let y = this.groundY
+    if (type === 'water-meter') {
+      // Water-meter floats at random height above ground
+      y += WATER_METER_HEIGHTS[Math.floor(Math.random() * 2)]
+    } else if (type === 'root-ball') {
+      y -= 60
+    }
+
     obstacle.spawn(cameraRight + 100, y, type, animated?.animKey)
   }
 
