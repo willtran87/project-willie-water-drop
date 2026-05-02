@@ -33,12 +33,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     if (options.playerType === 'jet-willie') {
       this.setTexture('jet-willie-idle')
+      // Scale down jet-willie to fit the 1000x340 canvas (original was 1200x420)
+      this.setScale(0.5)
       const body = this.body as Phaser.Physics.Arcade.Body
       body.setSize(350, 200)
-      body.setOffset(0, 0)
-      this.setOrigin(0, 0)
+      body.setOffset(25, 25)
+      this.setOrigin(0, 1)
     } else {
       this.setTexture('willie-idle')
+      this.setScale(1)
       const body = this.body as Phaser.Physics.Arcade.Body
       body.setSize(54, 88)
       body.setOffset(21, 5)

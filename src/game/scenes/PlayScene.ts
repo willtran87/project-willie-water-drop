@@ -135,12 +135,8 @@ export class PlayScene extends Phaser.Scene {
     this.collider?.destroy()
     this.collider = this.physics.add.collider(this.player, obstacleGroup, () => this.onPlayerHit())
 
-    // Start player running — jet-willie is much larger so position higher
-    if (config.playerType === 'jet-willie') {
-      this.player.setPosition(0, height - 260)
-    } else {
-      this.player.setPosition(50, height - 30)
-    }
+    // Position player at ground level
+    this.player.setPosition(50, height - 30)
     this.player.startRunning()
     this.trailParticles.start()
     this.player.resetJumpCount()
