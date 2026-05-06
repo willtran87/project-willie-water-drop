@@ -24,6 +24,9 @@ export function createGameConfig(parent: string): Phaser.Types.Core.GameConfig {
         debug: false,
       },
     },
+    loader: {
+      baseURL: import.meta.env.BASE_URL,
+    },
     scene: [PreloadScene, PlayScene],
     scale: {
       mode: Phaser.Scale.NONE,

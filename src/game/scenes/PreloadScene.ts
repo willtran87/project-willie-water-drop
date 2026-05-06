@@ -6,9 +6,6 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
-    // Ensure asset paths resolve from the app's base, not the current route
-    this.load.setBaseURL(import.meta.env.BASE_URL)
-
     // Audio
     this.load.audio('jump', 'assets/audio/jump.m4a')
     this.load.audio('hit', 'assets/audio/hit.m4a')
