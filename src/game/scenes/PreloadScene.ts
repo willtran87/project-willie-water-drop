@@ -24,6 +24,7 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image('willie-sobbing', '/assets/sprites/willie-sobbing.png')
     this.load.image('willie-cool-and-hydrated', '/assets/sprites/cool-and-hydrated.png')
     this.load.image('willie-professor', '/assets/sprites/willie-professor.png')
+    this.load.image('jet-willie-professor', '/assets/sprites/jet-willie-professor.png')
 
     // Obstacle images (hydrants)
     this.load.image('obsticle-1', '/assets/sprites/hydrant_small_1.png')

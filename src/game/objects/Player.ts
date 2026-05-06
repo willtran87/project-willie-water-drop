@@ -99,6 +99,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  reachObjective() {
+    this.anims.stop()
+    if (this.currentType === 'jet-willie') {
+      this.setTexture('jet-willie-professor')
+    } else {
+      this.setTexture('willie-professor')
+    }
+  }
+
   celebrate() {
     this.anims.stop()
     if (this.currentType === 'jet-willie') {

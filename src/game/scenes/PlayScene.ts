@@ -11,6 +11,22 @@ export class PlayScene extends Phaser.Scene {
   private ground!: Phaser.GameObjects.TileSprite
   private clouds: Phaser.GameObjects.Image[] = []
   private trees: Phaser.GameObjects.Image[] = []
+  private waterTower!: Phaser.GameObjects.Image
+  private fountain!: Phaser.GameObjects.Image
+  private bench!: Phaser.GameObjects.Image
+
+  // Decorative vehicles (Days 1-4 only, matching reference)
+  private vroom!: Phaser.GameObjects.Sprite
+  private vroomBig!: Phaser.GameObjects.Sprite
+  private jetSmall!: Phaser.GameObjects.Sprite
+  private jetBig!: Phaser.GameObjects.Sprite
+  private meterVan!: Phaser.GameObjects.Sprite
+  private utilityTruck!: Phaser.GameObjects.Sprite
+  private vroomVelocity = 0
+  private vroomBigVelocity = 0
+  private jetSmallVelocity = 0
+  private meterVanVelocity = 0
+  private utilityTruckVelocity = 0
 
   private config!: LevelConfig
   private gameSpeed = 0
@@ -40,17 +56,47 @@ export class PlayScene extends Phaser.Scene {
 
     // Clouds (parallax layer)
     this.clouds = [
-      this.add.image(width / 2, 50, 'cloud').setDepth(0).setAlpha(0.6),
-      this.add.image(width - 80, 30, 'cloud').setDepth(0).setAlpha(0.4).setScale(0.8),
-      this.add.image(width / 4, 70, 'cloud').setDepth(0).setAlpha(0.5).setScale(0.6),
+      this.add.image(width / 2, 170, 'cloud').setDepth(0),
+      this.add.image(width - 80, 80, 'cloud').setDepth(0),
+      this.add.image(width / 1.3, 100, 'cloud').setDepth(0),
     ]
 
-    // Background trees (parallax)
+    // Water tower (slow-drifting background decoration)
+    this.waterTower = this.add.image(650, height + 85, 'water-tower-2')
+      .setOrigin(0, 1)
+      .setDepth(1)
+
+    // Background trees (matching reference positions)
     this.trees = [
-      this.add.image(width * 0.3, height - 70, 'tree').setDepth(1).setAlpha(0.3).setScale(0.6),
-      this.add.image(width * 0.7, height - 60, 'tree').setDepth(2).setAlpha(0.5).setScale(0.8),
-      this.add.image(width * 1.2, height - 65, 'tree').setDepth(1).setAlpha(0.4).setScale(0.7),
+      this.add.image(700, 335, 'tree').setOrigin(0, 1).setDepth(2),
+      this.add.image(1000, 355, 'tree').setOrigin(0, 1).setDepth(1),
+      this.add.image(600, 380, 'tree').setOrigin(0, 1).setDepth(1),
     ]
+
+    // Background props (matching reference)
+    this.fountain = this.add.image(1500, 330, 'water-fountain')
+      .setOrigin(0, 1).setDepth(3)
+    this.bench = this.add.image(1200, 330, 'bench')
+      .setOrigin(0, 1).setDepth(1)
+
+    // Decorative vehicles (animated, non-colliding, matching reference)
+    this.vroom = this.add.sprite(-200, 285, 'vroom-vroom_small').setDepth(2)
+    this.vroom.play('vroom-vroom')
+
+    this.vroomBig = this.add.sprite(-200, 250, 'vroom-vroom_big').setDepth(200)
+    this.vroomBig.play('anim-vroom-big')
+
+    this.jetSmall = this.add.sprite(-500, 281, 'jet-small').setDepth(2)
+    this.jetSmall.play('anim-jet-small')
+
+    this.jetBig = this.add.sprite(-200, 245, 'jet-big').setDepth(200)
+    this.jetBig.play('anim-jet-big')
+
+    this.meterVan = this.add.sprite(-1000, 294, 'meter-van').setDepth(2)
+    this.meterVan.play('anim-meter-van')
+
+    this.utilityTruck = this.add.sprite(-3000, 294, 'utility-truck').setDepth(2)
+    this.utilityTruck.play('anim-utility-truck')
 
     // Player — positioned at canvas bottom, gravity + collideWorldBounds settles it
     this.player = new Player(this, 50, height)
@@ -141,6 +187,43 @@ export class PlayScene extends Phaser.Scene {
     // Update ground for new canvas size
     this.ground.setPosition(0, canvasH)
     this.ground.width = canvasW
+
+    // Water tower — swap texture per day and reposition for canvas height
+    this.waterTower.setTexture(config.waterTower)
+    this.waterTower.setPosition(650, canvasH + 85)
+
+    // Reposition trees and background props for canvas height
+    // Day 5 adds +80 to y positions (1200x420 vs 1000x340)
+    const yOff = config.playerType === 'jet-willie' ? 80 : 0
+    this.trees[0].setPosition(700, 335 + yOff)
+    this.trees[1].setPosition(1000, 355 + yOff)
+    this.trees[2].setPosition(600, 380 + yOff)
+    this.fountain.setPosition(1500, 330 + yOff)
+    this.bench.setPosition(1200, 330 + yOff)
+
+    // Show/hide vehicles — Day 5 has none (reference PlayScene_51 has no vehicles)
+    const showVehicles = config.playerType !== 'jet-willie'
+    this.vroom.setVisible(showVehicles)
+    this.vroomBig.setVisible(showVehicles)
+    this.jetSmall.setVisible(showVehicles)
+    this.jetBig.setVisible(showVehicles)
+    this.meterVan.setVisible(showVehicles)
+    this.utilityTruck.setVisible(showVehicles)
+
+    // Reset vehicle velocities (matching reference reset on death/restart)
+    this.vroomVelocity = 160
+    this.vroomBigVelocity = -1600
+    this.jetSmallVelocity = 250
+    this.meterVanVelocity = 300
+    this.utilityTruckVelocity = 400
+
+    // Reset vehicle positions
+    this.vroom.setPosition(-200, 285)
+    this.vroomBig.setPosition(-200, 250)
+    this.jetSmall.setPosition(-500, 281)
+    this.jetBig.setPosition(-200, 245)
+    this.meterVan.setPosition(-1000, 294)
+    this.utilityTruck.setPosition(-3000, 294)
 
     // Apply per-day settings
     this.cameras.main.setBackgroundColor(config.backgroundColor)
@@ -238,7 +321,7 @@ export class PlayScene extends Phaser.Scene {
     this.isGameRunning = false
     this.scoreTimer?.remove()
     this.physics.pause()
-    this.player.celebrate()
+    this.player.reachObjective()
     this.trailParticles.stop()
 
     gameEventEmitter.emit(GameEvents.OBJECTIVE_REACHED, {
@@ -280,27 +363,94 @@ export class PlayScene extends Phaser.Scene {
   update(_time: number, delta: number) {
     if (!this.isGameRunning || this.isDead) return
 
+    const width = this.scale.width
+
     // Scroll ground at full gameSpeed (matching original)
     this.ground.tilePositionX += this.gameSpeed
 
-    // Parallax clouds
-    this.clouds.forEach((cloud, i) => {
-      cloud.x -= 0.5 + i * 0.1
-      if (cloud.x + cloud.width / 2 < 0) {
-        cloud.x = this.scale.width + cloud.width / 2
+    // Water tower — very slow drift matching original (velocityX: -0.5 px/sec)
+    this.waterTower.x -= 0.5 * (delta / 1000)
+
+    // Parallax clouds (matching original: IncX -0.5)
+    this.clouds.forEach(cloud => {
+      cloud.x -= 0.5
+      if (cloud.getBounds().right < 0) {
+        cloud.x = width + 30
       }
     })
 
-    // Parallax trees
+    // Background trees (matching reference velocities: gameSpeed * 20/10/5)
+    const treeMultipliers = [20, 10, 5]
     this.trees.forEach((tree, i) => {
-      tree.x -= this.gameSpeed * (0.2 + i * 0.1)
-      if (tree.x + tree.width / 2 < 0) {
-        tree.x = this.scale.width + tree.width / 2 + Math.random() * 200
+      tree.x -= this.gameSpeed * treeMultipliers[i] * (delta / 1000)
+      if (tree.getBounds().left < -400) {
+        tree.x = width + (i === 0 ? 400 : 200)
       }
     })
+
+    // Background props (matching reference velocities)
+    this.fountain.x -= this.gameSpeed * 25 * (delta / 1000)
+    if (this.fountain.getBounds().left < -400) {
+      this.fountain.x = width + 500
+    }
+    this.bench.x -= this.gameSpeed * 20 * (delta / 1000)
+    if (this.bench.getBounds().left < -200) {
+      this.bench.x = width + 200
+    }
+
+    // Decorative vehicles (Days 1-4 only, matching reference behavior)
+    if (this.vroom.visible) {
+      this.updateVehicles(delta)
+    }
 
     // Update obstacles (pass delta for timer-based spawning)
     this.obstacleSpawner.update(this.gameSpeed, delta)
+  }
+
+  private updateVehicles(delta: number) {
+    const width = this.scale.width
+    const dt = delta / 1000
+
+    // vroom (small van moving right, decelerates)
+    this.vroomVelocity -= 0.015
+    this.vroom.x += this.vroomVelocity * dt
+
+    // When vroom exits right, reset it and spawn vroomBig from right
+    if (this.vroom.getBounds().right > width + 400) {
+      this.vroom.x = -200
+      this.vroomBig.x = width + 400
+    }
+
+    // vroomBig (large van zooming left, accelerates left)
+    this.vroomBigVelocity -= 0.25
+    this.vroomBig.x += this.vroomBigVelocity * dt
+
+    // jetSmall (small jet moving right, decelerates)
+    this.jetSmallVelocity -= 0.025
+    this.jetSmall.x += this.jetSmallVelocity * dt
+
+    // When jetSmall exits right, reset it and spawn jetBig from right
+    if (this.jetSmall.getBounds().right > width + 400) {
+      this.jetSmall.x = -400
+      this.jetBig.x = width + 600
+    }
+
+    // jetBig (zooms left, linked to vroomBig velocity)
+    this.jetBig.x += this.vroomBigVelocity * dt
+
+    // meterVan (moves right independently, decelerates)
+    this.meterVanVelocity -= 0.015
+    this.meterVan.x += this.meterVanVelocity * dt
+    if (this.meterVan.getBounds().right > width + 400) {
+      this.meterVan.x = -1500
+    }
+
+    // utilityTruck (moves right independently, decelerates)
+    this.utilityTruckVelocity -= 0.025
+    this.utilityTruck.x += this.utilityTruckVelocity * dt
+    if (this.utilityTruck.getBounds().right > width + 200) {
+      this.utilityTruck.x = -5000
+    }
   }
 
   private cleanupListeners() {
