@@ -90,6 +90,32 @@ export function HomePage() {
           </a>
         </div>
       </div>
+      <div className="max-w-2xl mx-auto px-8 pb-16">
+        <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/5 p-6">
+          <h2 className="text-2xl font-bold mb-3 text-emerald-400">City of Bloomington Public Works</h2>
+          <p className="text-white/70 mb-3 leading-relaxed">
+            Willie Water Drop was built by the <strong className="text-white">City of Bloomington, Minnesota
+            Public Works Department</strong>. Bloomington Public Works manages the city's drinking
+            water system, sanitary sewer, storm water, streets, and fleet services — keeping essential
+            infrastructure running for over 90,000 residents.
+          </p>
+          <p className="text-white/70 mb-4 leading-relaxed">
+            This game was originally launched during Water Week as a fun way for city employees and
+            residents to learn about where their water comes from, how it's treated, and why
+            conservation matters. Every trivia question in the game comes straight from Bloomington's
+            water utility team.
+          </p>
+          <a
+            href="https://www.bloomingtonmn.gov/eng/public-works-department"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-emerald-400/15 border border-emerald-400/30 text-emerald-400 px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-400/25 transition-colors"
+          >
+            Visit Bloomington Public Works
+            <span className="text-xs opacity-60">&#x2197;</span>
+          </a>
+        </div>
+      </div>
     </PageLayout>
   )
 }
