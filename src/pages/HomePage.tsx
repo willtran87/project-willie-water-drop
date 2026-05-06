@@ -64,6 +64,32 @@ export function HomePage() {
           </p>
         </div>
       </div>
+
+      <div className="max-w-2xl mx-auto px-8 pb-16">
+        <div className="rounded-xl border border-sky-400/20 bg-sky-400/5 p-6">
+          <h2 className="text-2xl font-bold mb-3 text-sky-400">Drinking Water Week</h2>
+          <p className="text-white/70 mb-3 leading-relaxed">
+            Willie Water Drop was created to celebrate <strong className="text-white">Drinking Water Week</strong>, an
+            annual event organized by the American Water Works Association (AWWA). Every year,
+            water utilities across the country use this week to highlight the importance of safe,
+            reliable drinking water and the infrastructure that delivers it to our communities.
+          </p>
+          <p className="text-white/70 mb-4 leading-relaxed">
+            The trivia questions in this game are all about water conservation, treatment, and
+            the journey water takes from source to tap. While you're dodging hydrants and water
+            meters, you're also learning what it takes to keep clean water flowing!
+          </p>
+          <a
+            href="https://www.awwa.org/communications-and-outreach/drinking-water-week/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-sky-400/15 border border-sky-400/30 text-sky-400 px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-sky-400/25 transition-colors"
+          >
+            Learn more at AWWA.org
+            <span className="text-xs opacity-60">&#x2197;</span>
+          </a>
+        </div>
+      </div>
     </PageLayout>
   )
 }

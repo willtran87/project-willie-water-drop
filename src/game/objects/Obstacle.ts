@@ -12,8 +12,8 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
     body.setImmovable(true)
     body.setAllowGravity(false)
 
-    // Origin at bottom-center so sprites sit ON the ground, not half-buried
-    this.setOrigin(0.5, 1)
+    // Origin at bottom-left to match original
+    this.setOrigin(0, 1)
     this.setDepth(50)
     this.setActive(false)
     this.setVisible(false)
@@ -27,13 +27,20 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
     this.animKey = animKey ?? null
     if (animKey) { this.play(animKey) }
 
-    // Tighten collision body to match original (slightly smaller than sprite)
+    // Reset body to match new texture dimensions before applying adjustments
     const body = this.body as Phaser.Physics.Arcade.Body
+    body.setSize(this.width, this.height, false)
+    body.setOffset(0, 0)
+
+    // Tighten collision body to match original
     if (texture === 'water-meter') {
-      body.setSize(body.width - 25, body.height / 1.5)
+      // Original: body.height /= 1.5, body.width -= 25
+      body.height = body.height / 1.5
+      body.width = body.width - 25
     } else if (texture.startsWith('obsticle')) {
-      body.setOffset(0, 5)
-      body.setSize(body.width - 10, body.height / 1.5)
+      // Original: body.offset.y = 5, body.width -= 10 (NO height change)
+      body.offset.y = 5
+      body.width = body.width - 10
     }
   }
 

@@ -10,6 +10,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private jumpsInAir = 0
   private maxAirJumps = 1
   private currentType: PlayerType = 'willie'
+  private inBackground = false
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'willie-idle')
@@ -22,6 +23,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     body.setSize(54, 88)
     body.setOffset(21, 5)
 
+    this.setOrigin(0, 1)
     this.setDepth(99)
     this.jumpSound = scene.sound.add('jump', { volume: 0.2 })
   }
@@ -30,19 +32,19 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.doubleJumpEnabled = options.doubleJump
     this.jumpVelocity = options.jumpVelocity
     this.currentType = options.playerType
+    this.inBackground = false
 
     if (options.playerType === 'jet-willie') {
       this.setTexture('jet-willie-idle')
-      // Display at 240x150 to fit the 1000x340 canvas (original 400x250 on 1200x420)
-      this.setDisplaySize(240, 150)
-      this.setOrigin(0.5, 1)
+      this.setOrigin(0, 0)
+      this.setDepth(100)
       const body = this.body as Phaser.Physics.Arcade.Body
-      body.setSize(300, 180)
-      body.setOffset(50, 35)
+      body.setSize(350, 200)
+      body.setOffset(0, 0)
     } else {
       this.setTexture('willie-idle')
-      this.setDisplaySize(88, 94)
-      this.setOrigin(0.5, 0.5)
+      this.setOrigin(0, 1)
+      this.setDepth(99)
       const body = this.body as Phaser.Physics.Arcade.Body
       body.setSize(54, 88)
       body.setOffset(21, 5)
@@ -57,6 +59,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       body.setVelocityY(this.jumpVelocity)
       this.jumpSound.play()
       this.jumpCount++
+
+      // Day 5 jet-willie: jump toggles between foreground/background lanes
+      if (this.currentType === 'jet-willie') {
+        this.inBackground = !this.inBackground
+        this.setDepth(this.inBackground ? 5 : 100)
+      }
+
       return true
     }
 
@@ -71,10 +80,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     return false
   }
 
+  isInBackground(): boolean { return this.inBackground }
+
   startRunning() {
     if (this.currentType === 'jet-willie') {
       this.play('willie-jet')
-      this.setDisplaySize(240, 150)
     } else {
       this.play('willie-run')
     }
@@ -84,7 +94,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.anims.stop()
     if (this.currentType === 'jet-willie') {
       this.setTexture('jet-willie-hurt')
-      this.setDisplaySize(240, 150)
     } else {
       this.setTexture('willie-hurt')
     }
@@ -94,7 +103,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.anims.stop()
     if (this.currentType === 'jet-willie') {
       this.setTexture('jet-willie-cool')
-      this.setDisplaySize(240, 150)
     } else {
       this.setTexture('willie-cool')
     }
@@ -104,7 +112,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.anims.stop()
     if (this.currentType === 'jet-willie') {
       this.setTexture('jet-willie-hurt')
-      this.setDisplaySize(240, 150)
     } else {
       this.setTexture('willie-sobbing')
     }

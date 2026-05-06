@@ -52,8 +52,8 @@ export class PlayScene extends Phaser.Scene {
       this.add.image(width * 1.2, height - 65, 'tree').setDepth(1).setAlpha(0.4).setScale(0.7),
     ]
 
-    // Player
-    this.player = new Player(this, 50, height - 30)
+    // Player — positioned at canvas bottom, gravity + collideWorldBounds settles it
+    this.player = new Player(this, 50, height)
 
     // Jump splash particles
     this.jumpParticles = this.add.particles(0, 0, 'willie', {
@@ -98,6 +98,10 @@ export class PlayScene extends Phaser.Scene {
     gameEventEmitter.on(GameEvents.PAUSE, this.onPause, this)
     gameEventEmitter.on(GameEvents.RESUME, this.onResume, this)
 
+    // Clean up listeners on both scene shutdown AND game destroy
+    this.events.on('shutdown', this.cleanupListeners, this)
+    this.events.on('destroy', this.cleanupListeners, this)
+
     // Store obstacle group reference for spawner setup
     this.data.set('obstacleGroup', this.physics.add.group())
 
@@ -109,6 +113,9 @@ export class PlayScene extends Phaser.Scene {
   }
 
   private startLevel(levelId: number) {
+    // Guard: ignore if game was destroyed (stale listener from React StrictMode)
+    if (!this.scene || !this.game?.canvas) return
+
     const config = getLevelById(levelId)
     if (!config) return
 
@@ -117,6 +124,23 @@ export class PlayScene extends Phaser.Scene {
     this.score = 0
     this.isGameRunning = true
     this.isDead = false
+
+    // Resize game to match this day's dimensions (only if changed)
+    const [canvasW, canvasH] = config.canvasSize
+    if (this.game.canvas.width !== canvasW || this.game.canvas.height !== canvasH) {
+      this.game.canvas.width = canvasW
+      this.game.canvas.height = canvasH
+      const renderer = this.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer
+      if ('gl' in renderer && renderer.gl) {
+        renderer.resize(canvasW, canvasH)
+      }
+    }
+    this.cameras.main.setSize(canvasW, canvasH)
+    this.physics.world.setBounds(0, 0, canvasW, canvasH)
+
+    // Update ground for new canvas size
+    this.ground.setPosition(0, canvasH)
+    this.ground.width = canvasW
 
     // Apply per-day settings
     this.cameras.main.setBackgroundColor(config.backgroundColor)
@@ -127,18 +151,29 @@ export class PlayScene extends Phaser.Scene {
     })
 
     // Set up spawner
-    const { height } = this.scale
     const obstacleGroup = this.data.get('obstacleGroup') as Phaser.Physics.Arcade.Group
-    // Ground tile is 26px tall at the bottom, so ground surface is at height - 26
-    this.obstacleSpawner = new ObstacleSpawner(this, config, height - 26, obstacleGroup)
+    this.obstacleSpawner = new ObstacleSpawner(this, config, obstacleGroup)
 
     // Collision — destroy previous collider to avoid accumulation on restart
     this.collider?.destroy()
-    this.collider = this.physics.add.collider(this.player, obstacleGroup, () => this.onPlayerHit())
+    this.collider = this.physics.add.collider(
+      this.player,
+      obstacleGroup,
+      () => this.onPlayerHit(),
+      // processCallback: for Day 5, only collide if player and obstacle are in the same lane
+      (_player, obstacle) => {
+        if (config.playerType === 'jet-willie') {
+          const playerBg = this.player.isInBackground()
+          const obsBg = (obstacle as Phaser.GameObjects.GameObject).getData('isBackground') ?? false
+          return playerBg === obsBg
+        }
+        return true
+      },
+    )
 
-    // Position player at ground level — jet-willie is wider so push further right
+    // Position player at ground level
     const playerX = config.playerType === 'jet-willie' ? 150 : 50
-    this.player.setPosition(playerX, height - 30)
+    this.player.setPosition(playerX, canvasH)
     this.player.startRunning()
     this.trailParticles.start()
     this.player.resetJumpCount()
@@ -167,7 +202,12 @@ export class PlayScene extends Phaser.Scene {
     if (!this.isGameRunning || this.isDead) return
     const jumped = this.player.jump()
     if (jumped) {
-      this.jumpParticles.emitParticleAt(this.player.x, this.player.y + 40)
+      // Emit particles near player feet
+      const px = this.player.x + this.player.displayWidth / 2
+      const py = this.config.playerType === 'jet-willie'
+        ? this.player.y + 200
+        : this.player.y
+      this.jumpParticles.emitParticleAt(px, py)
     }
   }
 
@@ -237,11 +277,11 @@ export class PlayScene extends Phaser.Scene {
     }
   }
 
-  update() {
+  update(_time: number, delta: number) {
     if (!this.isGameRunning || this.isDead) return
 
-    // Scroll ground
-    this.ground.tilePositionX += this.gameSpeed * 0.5
+    // Scroll ground at full gameSpeed (matching original)
+    this.ground.tilePositionX += this.gameSpeed
 
     // Parallax clouds
     this.clouds.forEach((cloud, i) => {
@@ -259,16 +299,17 @@ export class PlayScene extends Phaser.Scene {
       }
     })
 
-    // Update obstacles
-    this.obstacleSpawner.update(this.gameSpeed, this.scale.width)
+    // Update obstacles (pass delta for timer-based spawning)
+    this.obstacleSpawner.update(this.gameSpeed, delta)
   }
 
-  shutdown() {
+  private cleanupListeners() {
     gameEventEmitter.off(GameEvents.START_LEVEL, this.startLevel, this)
     gameEventEmitter.off(GameEvents.RESTART, this.restartLevel, this)
     gameEventEmitter.off(GameEvents.TRIVIA_ANSWERED, this.onTriviaAnswered, this)
     gameEventEmitter.off(GameEvents.PAUSE, this.onPause, this)
     gameEventEmitter.off(GameEvents.RESUME, this.onResume, this)
+    this.scoreTimer?.remove()
   }
 
   private onPause() { this.scene.pause() }

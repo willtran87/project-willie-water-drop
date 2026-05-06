@@ -8,11 +8,12 @@ export function createGameConfig(parent: string): Phaser.Types.Core.GameConfig {
   // Use the pending level's background color to avoid a flash of wrong color
   const level = pendingLevelId ? getLevelById(pendingLevelId) : null
   const bgColor = level?.backgroundColor ?? '#87CEEB'
+  const [width, height] = level?.canvasSize ?? [1000, 340]
 
   return {
     type: Phaser.AUTO,
-    width: 1000,
-    height: 340,
+    width,
+    height,
     parent,
     pixelArt: true,
     transparent: false,

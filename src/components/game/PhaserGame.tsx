@@ -13,19 +13,23 @@ export function PhaserGame({ className }: PhaserGameProps) {
   useEffect(() => {
     if (!containerRef.current) return
 
-    // Destroy any existing game before creating a new one
-    if (gameRef.current) {
-      gameRef.current.destroy(true)
-      gameRef.current = null
-    }
-
     const containerId = 'phaser-game-container'
     containerRef.current.id = containerId
 
-    const config = createGameConfig(containerId)
-    gameRef.current = new Phaser.Game(config)
+    // Defer game creation so React StrictMode's immediate unmount/remount
+    // cycle completes before Phaser starts initializing WebGL.
+    const timer = setTimeout(() => {
+      if (!containerRef.current) return
+      if (gameRef.current) {
+        gameRef.current.destroy(true)
+        gameRef.current = null
+      }
+      const config = createGameConfig(containerId)
+      gameRef.current = new Phaser.Game(config)
+    }, 0)
 
     return () => {
+      clearTimeout(timer)
       gameRef.current?.destroy(true)
       gameRef.current = null
     }

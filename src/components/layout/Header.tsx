@@ -17,7 +17,7 @@ export function Header() {
           💧
         </div>
         <span className="font-bold text-lg tracking-wide text-white">
-          WILLIE'S WATER DROP
+          WILLIE WATER DROP
         </span>
       </Link>
       <nav className="flex gap-6">
