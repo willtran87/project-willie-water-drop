@@ -34,13 +34,10 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
 
     // Tighten collision body to match original
     if (texture === 'water-meter') {
-      // Original: body.height /= 1.5, body.width -= 25
-      body.height = body.height / 1.5
-      body.width = body.width - 25
+      body.setSize(body.width - 25, body.height / 1.5, false)
     } else if (texture.startsWith('obsticle')) {
-      // Original: body.offset.y = 5, body.width -= 10 (NO height change)
-      body.offset.y = 5
-      body.width = body.width - 10
+      body.setSize(body.width - 10, body.height, false)
+      body.setOffset(0, 5)
     }
   }
 
