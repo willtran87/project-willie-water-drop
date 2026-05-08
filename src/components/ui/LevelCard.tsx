@@ -15,6 +15,8 @@ const LEVEL_NAMES: Record<number, string> = {
 export function LevelCard({ level, progress, unlocked }: LevelCardProps) {
   const name = LEVEL_NAMES[level.levelInDay] ?? `Level ${level.levelInDay}`
   const completed = progress?.completed && progress?.triviaCorrect
+  const bestScore = progress?.bestScore ?? 0
+  const hasBestScore = (progress?.attempts ?? 0) > 0 || bestScore > 0 || completed
 
   if (!unlocked) {
     return (
@@ -47,13 +49,9 @@ export function LevelCard({ level, progress, unlocked }: LevelCardProps) {
       <div className="text-sm text-white/50 mb-3">
         {level.objective ? `Score ${level.objective} pts` : 'No objective'}
       </div>
-      {completed ? (
+      {hasBestScore && (
         <div className="flex justify-between items-center">
-          <div className="text-xs text-green-400">✓ Best: {progress!.bestScore}</div>
-        </div>
-      ) : (
-        <div className="text-2xl opacity-30">
-          {level.isBonus ? '🎮' : '▶'}
+          <div className="text-xs text-green-400">Best: {bestScore}</div>
         </div>
       )}
     </Link>

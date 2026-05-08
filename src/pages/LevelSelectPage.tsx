@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useSearchParams } from 'react-router'
 import { PageLayout } from '../components/layout/PageLayout'
 import { LevelCard } from '../components/ui/LevelCard'
 import { useGameProgress } from '../hooks/useGameProgress'
@@ -61,11 +61,16 @@ const DAY_INFO: Record<number, { title: string; flavor: string; mechanics: strin
 }
 
 export function LevelSelectPage() {
-  const [selectedDay, setSelectedDay] = useState(1)
+  const [searchParams, setSearchParams] = useSearchParams()
   const { isLevelUnlocked, getProgress } = useGameProgress()
+  const requestedDay = Number(searchParams.get('day'))
+  const selectedDay = DAYS.includes(requestedDay) ? requestedDay : 1
 
   const dayLevels = getLevelsByDay(selectedDay)
   const info = DAY_INFO[selectedDay]
+  const selectDay = (day: number) => {
+    setSearchParams(day === 1 ? {} : { day: String(day) })
+  }
 
   return (
     <PageLayout>
@@ -76,7 +81,7 @@ export function LevelSelectPage() {
           {DAYS.map(day => (
             <button
               key={day}
-              onClick={() => setSelectedDay(day)}
+              onClick={() => selectDay(day)}
               className={`px-5 py-2 rounded-lg font-bold text-sm transition-colors cursor-pointer ${
                 selectedDay === day
                   ? 'bg-sky-400 text-slate-900'
