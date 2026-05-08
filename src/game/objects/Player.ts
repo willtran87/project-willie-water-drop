@@ -25,6 +25,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.setOrigin(0, 1)
     this.setDepth(99)
+    this.setVisible(false)
     this.jumpSound = scene.sound.add('jump', { volume: 0.2 })
   }
 
@@ -33,6 +34,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.jumpVelocity = options.jumpVelocity
     this.currentType = options.playerType
     this.inBackground = false
+    this.setVisible(true)
 
     if (options.playerType === 'jet-willie') {
       this.setTexture('jet-willie-idle')

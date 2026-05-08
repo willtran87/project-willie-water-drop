@@ -86,22 +86,22 @@ export class PlayScene extends Phaser.Scene {
       .setOrigin(0, 1).setDepth(4)
 
     // Decorative vehicles (animated, non-colliding, matching reference)
-    this.vroom = this.add.sprite(-200, 285, 'vroom-vroom_small').setDepth(2)
+    this.vroom = this.add.sprite(-200, 285, 'vroom-vroom_small').setDepth(2).setVisible(false)
     this.vroom.play('vroom-vroom')
 
-    this.vroomBig = this.add.sprite(-200, 250, 'vroom-vroom_big').setDepth(200)
+    this.vroomBig = this.add.sprite(-200, 250, 'vroom-vroom_big').setDepth(200).setVisible(false)
     this.vroomBig.play('anim-vroom-big')
 
-    this.jetSmall = this.add.sprite(-500, 281, 'jet-small').setDepth(2)
+    this.jetSmall = this.add.sprite(-500, 281, 'jet-small').setDepth(2).setVisible(false)
     this.jetSmall.play('anim-jet-small')
 
-    this.jetBig = this.add.sprite(-200, 245, 'jet-big').setDepth(200)
+    this.jetBig = this.add.sprite(-200, 245, 'jet-big').setDepth(200).setVisible(false)
     this.jetBig.play('anim-jet-big')
 
-    this.meterVan = this.add.sprite(-1000, 294, 'meter-van').setDepth(2)
+    this.meterVan = this.add.sprite(-1000, 294, 'meter-van').setDepth(2).setVisible(false)
     this.meterVan.play('anim-meter-van')
 
-    this.utilityTruck = this.add.sprite(-3000, 294, 'utility-truck').setDepth(2)
+    this.utilityTruck = this.add.sprite(-3000, 294, 'utility-truck').setDepth(2).setVisible(false)
     this.utilityTruck.play('anim-utility-truck')
 
     // Player — positioned at canvas bottom, gravity + collideWorldBounds settles it
