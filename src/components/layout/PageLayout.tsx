@@ -8,7 +8,7 @@ interface PageLayoutProps {
 
 export function PageLayout({ children, showHeader = true }: PageLayoutProps) {
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-slate-900 text-white scanline-field">
       {showHeader && <Header />}
       {children}
     </div>

@@ -6,6 +6,8 @@ interface GameOverOverlayProps {
   onExit: () => void
 }
 
+const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`
+
 export function GameOverOverlay({ score, onRestart, onExit }: GameOverOverlayProps) {
   const handleRestart = () => {
     gameEventEmitter.emit(GameEvents.RESTART)
@@ -13,22 +15,31 @@ export function GameOverOverlay({ score, onRestart, onExit }: GameOverOverlayPro
   }
 
   return (
-    <div className="absolute inset-0 bg-slate-900/90 flex items-center justify-center z-20">
-      <div className="text-center">
-        <h2 className="text-4xl font-bold text-red-400 mb-4">Game Over</h2>
-        <p className="text-lg text-white/70 mb-2">
-          Score: <span className="text-sky-400 font-bold">{score}</span>
+    <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/88 px-4">
+      <div className="pixel-panel game-overlay-enter w-full max-w-xl rounded-lg p-6 text-center">
+        <img
+          src={asset('assets/ui/game-over.png')}
+          alt="Game Over"
+          className="pixel-art mx-auto mb-5 h-auto w-full max-w-[380px]"
+        />
+        <img
+          src={asset('assets/sprites/willie-hurt.png')}
+          alt=""
+          className="pixel-art mx-auto mb-4 h-24 w-auto"
+        />
+        <p className="text-lg text-white/70">
+          Score: <span className="font-bold text-sky-400">{score}</span>
         </p>
-        <div className="flex gap-4 justify-center mt-8">
+        <div className="mt-8 flex flex-wrap justify-center gap-4">
           <button
             onClick={handleRestart}
-            className="bg-sky-500 hover:bg-sky-400 text-slate-900 font-bold py-3 px-8 rounded-lg transition-colors cursor-pointer"
+            className="pixel-button rounded-lg bg-sky-400 px-8 py-3 font-bold text-slate-950 transition-colors cursor-pointer hover:bg-sky-300"
           >
             TRY AGAIN
           </button>
           <button
             onClick={onExit}
-            className="border-2 border-white/30 hover:border-white/60 text-white font-semibold py-3 px-8 rounded-lg transition-colors cursor-pointer"
+            className="rounded-lg border-2 border-white/30 px-8 py-3 font-semibold text-white transition-colors cursor-pointer hover:border-white/60"
           >
             LEVEL SELECT
           </button>

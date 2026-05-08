@@ -1,5 +1,7 @@
 import { Link, useLocation } from 'react-router'
 
+const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`
+
 export function Header() {
   const location = useLocation()
 
@@ -11,12 +13,16 @@ export function Header() {
     }`
 
   return (
-    <header className="flex justify-between items-center px-8 py-4 bg-black/20">
+    <header className="flex justify-between items-center px-5 sm:px-8 py-4 bg-slate-950/70 border-b border-sky-400/10">
       <Link to="/" className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-sky-400 rounded-full flex items-center justify-center text-xl">
-          💧
+        <div className="w-10 h-10 bg-sky-400 rounded-lg flex items-center justify-center">
+          <img
+            src={asset('assets/sprites/water-medallion.png')}
+            alt=""
+            className="pixel-art w-8 h-8"
+          />
         </div>
-        <span className="font-bold text-lg tracking-wide text-white">
+        <span className="font-bold text-base sm:text-lg tracking-wide text-white">
           WILLIE WATER DROP
         </span>
       </Link>

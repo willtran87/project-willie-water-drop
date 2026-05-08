@@ -6,6 +6,8 @@ interface TriviaModalProps {
   onAnswer: (correct: boolean) => void
 }
 
+const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`
+
 export function TriviaModal({ question, onAnswer }: TriviaModalProps) {
   const [timeLeft, setTimeLeft] = useState(question.timeLimit)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
@@ -27,7 +29,6 @@ export function TriviaModal({ question, onAnswer }: TriviaModalProps) {
     return () => clearInterval(timer)
   }, [answered, timeLeft])
 
-  // Handle timeout
   useEffect(() => {
     if (timeLeft === 0 && !answered) {
       setAnswered(true)
@@ -39,70 +40,74 @@ export function TriviaModal({ question, onAnswer }: TriviaModalProps) {
     if (answered) return
     setSelectedIndex(index)
     setAnswered(true)
-    const correct = index === question.correctIndex
-    onAnswer(correct)
+    onAnswer(index === question.correctIndex)
   }, [answered, question.correctIndex, onAnswer])
 
   const getOptionStyle = (index: number) => {
     if (!answered) {
-      return 'bg-white/[0.08] border-2 border-white/15 hover:border-sky-400/50'
+      return 'bg-white/[0.08] border-white/15 hover:border-sky-400/60'
     }
     if (index === question.correctIndex) {
-      return 'bg-green-500/20 border-2 border-green-400'
+      return 'bg-green-500/20 border-green-400'
     }
     if (index === selectedIndex && index !== question.correctIndex) {
-      return 'bg-red-500/20 border-2 border-red-400'
+      return 'bg-red-500/20 border-red-400'
     }
-    return 'bg-white/[0.08] border-2 border-white/15 opacity-50'
+    return 'bg-white/[0.08] border-white/15 opacity-50'
   }
 
   const letters = ['A', 'B', 'C', 'D']
 
   return (
-    <div className="absolute inset-0 bg-slate-900/95 flex items-center justify-center z-30">
-      <div className="text-center max-w-lg px-4">
-        {/* Timer */}
-        <div className={`w-16 h-16 rounded-full border-3 flex items-center justify-center mx-auto mb-5 text-2xl font-bold ${
-          timeLeft <= 5 ? 'border-red-400 text-red-400' : 'border-sky-400 text-white'
-        }`}>
-          {timeLeft}
-        </div>
-
-        <div className="text-xs uppercase tracking-[0.2em] text-white/50 mb-3">
-          Trivia Time
-        </div>
-
-        <h3 className="text-xl font-bold text-white mb-8">
-          {question.question}
-        </h3>
-
-        {/* Answer grid */}
-        <div className="grid grid-cols-2 gap-3">
-          {question.options.map((option, i) => (
-            <button
-              key={i}
-              onClick={() => handleSelect(i)}
-              disabled={answered}
-              className={`rounded-xl p-4 text-left transition-colors cursor-pointer ${getOptionStyle(i)}`}
-            >
-              <span className="font-bold text-white/50 mr-2">{letters[i]}</span>
-              <span className="text-white">{option}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Feedback message */}
-        {answered && (
-          <div className={`mt-6 text-lg font-bold ${
-            selectedIndex === question.correctIndex ? 'text-green-400' : 'text-red-400'
+    <div className="absolute inset-0 z-30 flex items-center justify-center bg-slate-950/92 px-4">
+      <div className="pixel-panel game-overlay-enter grid w-full max-w-3xl gap-5 rounded-lg p-5 text-center sm:grid-cols-[8rem_1fr] sm:text-left">
+        <div className="flex flex-row items-center justify-center gap-4 sm:flex-col">
+          <div className={`flex h-16 w-16 items-center justify-center rounded-lg border-2 text-2xl font-bold ${
+            timeLeft <= 5 ? 'border-red-400 text-red-400' : 'border-sky-400 text-white'
           }`}>
-            {timeLeft === 0 && selectedIndex === null
-              ? "Time's up!"
-              : selectedIndex === question.correctIndex
-                ? 'Correct!'
-                : 'Incorrect!'}
+            {timeLeft}
           </div>
-        )}
+          <img
+            src={asset('assets/sprites/willie-professor.png')}
+            alt=""
+            className="pixel-art h-24 w-auto"
+          />
+        </div>
+
+        <div>
+          <div className="mb-3 text-xs uppercase tracking-[0.2em] text-sky-300/70">
+            Trivia Time
+          </div>
+          <h3 className="mb-6 text-xl font-bold leading-snug text-white">
+            {question.question}
+          </h3>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {question.options.map((option, i) => (
+              <button
+                key={i}
+                onClick={() => handleSelect(i)}
+                disabled={answered}
+                className={`min-h-16 rounded-lg border-2 p-4 text-left transition-colors cursor-pointer ${getOptionStyle(i)}`}
+              >
+                <span className="mr-2 font-bold text-sky-300/80">{letters[i]}</span>
+                <span className="text-white">{option}</span>
+              </button>
+            ))}
+          </div>
+
+          {answered && (
+            <div className={`mt-5 text-lg font-bold ${
+              selectedIndex === question.correctIndex ? 'text-green-400' : 'text-red-400'
+            }`}>
+              {timeLeft === 0 && selectedIndex === null
+                ? "Time's up!"
+                : selectedIndex === question.correctIndex
+                  ? 'Correct!'
+                  : 'Incorrect!'}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

@@ -75,6 +75,7 @@ export class ObstacleSpawner {
     if (this.config.playerType === 'jet-willie') {
       const isBackground = Math.random() < 0.5
       obstacle.setDepth(isBackground ? 5 : 101)
+      obstacle.setAlpha(isBackground ? 0.62 : 1)
       obstacle.setData('isBackground', isBackground)
     }
   }

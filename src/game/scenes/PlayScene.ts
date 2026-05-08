@@ -14,6 +14,8 @@ export class PlayScene extends Phaser.Scene {
   private waterTower!: Phaser.GameObjects.Image
   private fountain!: Phaser.GameObjects.Image
   private bench!: Phaser.GameObjects.Image
+  private signpost!: Phaser.GameObjects.Image
+  private trafficCone!: Phaser.GameObjects.Image
 
   // Decorative vehicles (Days 1-4 only, matching reference)
   private vroom!: Phaser.GameObjects.Sprite
@@ -78,6 +80,10 @@ export class PlayScene extends Phaser.Scene {
       .setOrigin(0, 1).setDepth(3)
     this.bench = this.add.image(1200, 330, 'bench')
       .setOrigin(0, 1).setDepth(1)
+    this.signpost = this.add.image(900, 330, 'signpost')
+      .setOrigin(0, 1).setDepth(3)
+    this.trafficCone = this.add.image(1850, 330, 'traffic-cone')
+      .setOrigin(0, 1).setDepth(4)
 
     // Decorative vehicles (animated, non-colliding, matching reference)
     this.vroom = this.add.sprite(-200, 285, 'vroom-vroom_small').setDepth(2)
@@ -200,6 +206,8 @@ export class PlayScene extends Phaser.Scene {
     this.trees[2].setPosition(600, 380 + yOff)
     this.fountain.setPosition(1500, 330 + yOff)
     this.bench.setPosition(1200, 330 + yOff)
+    this.signpost.setPosition(900, 330 + yOff)
+    this.trafficCone.setPosition(1850, 330 + yOff)
 
     // Show/hide vehicles — Day 5 has none (reference PlayScene_51 has no vehicles)
     const showVehicles = config.playerType !== 'jet-willie'
@@ -396,6 +404,14 @@ export class PlayScene extends Phaser.Scene {
     this.bench.x -= this.gameSpeed * 20 * (delta / 1000)
     if (this.bench.getBounds().left < -200) {
       this.bench.x = width + 200
+    }
+    this.signpost.x -= this.gameSpeed * 18 * (delta / 1000)
+    if (this.signpost.getBounds().left < -100) {
+      this.signpost.x = width + 520
+    }
+    this.trafficCone.x -= this.gameSpeed * 24 * (delta / 1000)
+    if (this.trafficCone.getBounds().left < -80) {
+      this.trafficCone.x = width + 760
     }
 
     // Decorative vehicles (Days 1-4 only, matching reference behavior)

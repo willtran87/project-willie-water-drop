@@ -16,6 +16,48 @@
   animation: fadeIn 0.3s ease-out;
 }
 
+.pixel-art {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.pixel-panel {
+  border: 2px solid rgb(56 189 248 / 0.32);
+  background:
+    linear-gradient(180deg, rgb(14 42 66 / 0.9), rgb(10 24 42 / 0.95)),
+    rgb(15 23 42);
+  box-shadow:
+    0 0 0 2px rgb(255 255 255 / 0.04) inset,
+    0 18px 0 rgb(0 0 0 / 0.16);
+}
+
+.pixel-card {
+  background: rgb(15 23 42 / 0.84);
+  box-shadow:
+    0 0 0 2px rgb(255 255 255 / 0.03) inset,
+    0 10px 0 rgb(0 0 0 / 0.16);
+}
+
+.pixel-button {
+  box-shadow:
+    0 4px 0 rgb(2 132 199),
+    0 0 0 2px rgb(255 255 255 / 0.12) inset;
+}
+
+.pixel-button:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 0 rgb(2 132 199),
+    0 0 0 2px rgb(255 255 255 / 0.12) inset;
+}
+
+.scanline-field {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }

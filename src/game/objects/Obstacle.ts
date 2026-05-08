@@ -24,6 +24,8 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
     this.setPosition(x, y)
     this.setActive(true)
     this.setVisible(true)
+    this.setAlpha(1)
+    this.setData('isBackground', false)
     this.animKey = animKey ?? null
     if (animKey) { this.play(animKey) }
 
@@ -48,6 +50,7 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
   recycle() {
     this.setActive(false)
     this.setVisible(false)
+    this.setAlpha(1)
     this.setPosition(-100, -100)
     if (this.animKey) { this.anims.stop() }
   }

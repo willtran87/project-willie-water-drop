@@ -54,6 +54,8 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image('cloud', 'assets/environment/cloud.png')
     this.load.image('tree', 'assets/environment/tree.png')
     this.load.image('bench', 'assets/environment/bench.png')
+    this.load.image('signpost', 'assets/environment/signpost.png')
+    this.load.image('traffic-cone', 'assets/environment/traffic-cone.png')
     this.load.image('water-fountain', 'assets/environment/water-fountain.png')
     this.load.image('water-tower-1', 'assets/environment/water-tower-1.png')
     this.load.image('water-tower-2', 'assets/environment/water-tower-2.png')
